@@ -35,3 +35,9 @@ python tools/build_review_pdf.py
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\init-backup.ps1 -ProjectDir . -Message "说明本次改动"
 ```
+
+## 自动同步
+
+本机任务计划程序每10分钟运行一次 `auto-sync-artifacts.ps1`。它只检查原项目的 `paper/` 与 `output/pdf/`，同步新建或修改的文档、表格、网页、图像和PDF；数据集、模型权重、临时目录与凭据文件不在同步范围内。
+
+同步日志保存在 `%LOCALAPPDATA%\DS-SOD-AutoSync\auto-sync.log`。
