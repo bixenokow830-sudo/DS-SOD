@@ -1,0 +1,55 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="5">
+<title>DS-SOD v0.9 · 实时实验进度</title><style>
+:root{--ink:#eaf2f4;--muted:#9cacb5;--line:#29404a;--bg:#0a1419;--card:#10212a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% -10%,#163b47,transparent 40%),var(--bg);color:var(--ink);font:15px/1.5 'Microsoft YaHei UI',system-ui,sans-serif}
+main{max-width:1050px;margin:0 auto;padding:30px 22px 70px}header{display:flex;justify-content:space-between;gap:20px;align-items:end;border-bottom:1px solid var(--line);padding-bottom:18px}
+.eyebrow{color:#5fd7ca;font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase}h1{font-size:29px;line-height:1.2;margin:8px 0}h2{font-size:22px;margin:2px 0}
+.muted,p,small{color:var(--muted)}p{margin:8px 0}.clock{text-align:right;white-space:nowrap}.clock b{font-size:18px;color:#c1fff2}.summary{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}
+.pill{background:#18313b;border:1px solid var(--line);border-radius:100px;padding:8px 13px}.pill b{color:#83e9d4}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:15px}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:0 12px 35px #02080a45}
+.top,.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.badge{font-size:12px;border-radius:100px;padding:5px 10px;white-space:nowrap}.done{background:#17482f;color:#8bf0ad}.active{background:#4d3719;color:#ffd17d}.waiting{background:#28343d;color:#b8c6ca}
+.row{margin-top:18px;font-size:13px;color:#b5c7cd}.bar{height:9px;background:#263b45;border-radius:100px;overflow:hidden;margin-top:6px}.bar span{display:block;height:100%;border-radius:100px}.teal{background:linear-gradient(90deg,#159b90,#5be3c5)}.blue{background:linear-gradient(90deg,#4275d9,#85c8ff)}
+.detail{font-size:12px;min-height:32px}.score{margin-top:14px;font-weight:700;color:#b4f7ea;border-top:1px solid var(--line);padding-top:12px}
+section{margin-top:28px}section h2{font-size:18px}table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;margin-top:12px}th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line)}th{color:#b3c7ce;font-size:13px}td b{color:#9cf2dc}.note{font-size:12px;max-width:850px}
+@media(max-width:650px){header{display:block}.clock{text-align:left;margin-top:10px}table{font-size:12px}th,td{padding:9px 7px}}
+</style></head><body><main>
+<header><div><div class="eyebrow">DS-SOD-Hybrid / v0.9</div><h1>干净跨数据集实验进度</h1>
+<p>三折留一验证 · 框统计只从源域训练集提取 · GPU 本地运行</p></div>
+<div class="clock"><small>页面每 5 秒自动刷新</small><br><b>2026-10-10 21:51:17</b></div></header>
+<div class="summary"><div class="pill">完成 <b>3/3</b></div><div class="pill">训练中 <b>0</b></div><div class="pill">推理中 <b>0</b></div></div>
+<div class="grid"><article class="card">
+          <div class="top"><div><small>被留出测试集</small><h2>ORSSD</h2></div>
+          <strong class="badge done">评估完成</strong></div>
+          <p>训练来源：EORSSD + ORSI-4199；仅使用源域训练标注和提示统计。</p>
+          <div class="row"><span>训练</span><b>100.0%</b></div><div class="bar"><span class="teal" style="width:100.0%"></span></div>
+          <p class="detail">训练已完成 · 3/3 轮</p>
+          <div class="row"><span>推理</span><b>200/200 张</b></div>
+          <div class="bar"><span class="blue" style="width:100.0%"></span></div>
+          <p class="detail">提示统计：源域训练集：6,900 框；命中 3,394，错框 3,494</p>
+          <div class="score">Sα 0.9016 · MAE 0.0230</div>
+        </article><article class="card">
+          <div class="top"><div><small>被留出测试集</small><h2>EORSSD</h2></div>
+          <strong class="badge done">评估完成</strong></div>
+          <p>训练来源：ORSSD + ORSI-4199；仅使用源域训练标注和提示统计。</p>
+          <div class="row"><span>训练</span><b>100.0%</b></div><div class="bar"><span class="teal" style="width:100.0%"></span></div>
+          <p class="detail">训练已完成 · 3/3 轮</p>
+          <div class="row"><span>推理</span><b>600/600 张</b></div>
+          <div class="bar"><span class="blue" style="width:100.0%"></span></div>
+          <p class="detail">提示统计：源域训练集：5,404 框；命中 2,718，错框 2,675</p>
+          <div class="score">Sα 0.8799 · MAE 0.0148</div>
+        </article><article class="card">
+          <div class="top"><div><small>被留出测试集</small><h2>ORSI4199</h2></div>
+          <strong class="badge done">评估完成</strong></div>
+          <p>训练来源：ORSSD + EORSSD；仅使用源域训练标注和提示统计。</p>
+          <div class="row"><span>训练</span><b>100.0%</b></div><div class="bar"><span class="teal" style="width:100.0%"></span></div>
+          <p class="detail">训练已完成 · 3/3 轮</p>
+          <div class="row"><span>推理</span><b>2,199/2,199 张</b></div>
+          <div class="bar"><span class="blue" style="width:100.0%"></span></div>
+          <p class="detail">提示统计：源域训练集：3,674 框；命中 1,838，错框 1,813</p>
+          <div class="score">Sα 0.8317 · MAE 0.0478</div>
+        </article></div>
+<section><h2>结果对照：Sα ↑</h2><table><thead><tr><th>被测数据集</th><th>冻结 SAM2 + PRISM</th><th>本次源域训练</th><th>域内训练（两种子均值）</th></tr></thead><tbody><tr><td>ORSSD</td><td>0.7964</td><td><b>0.9016</b></td><td>0.9177</td></tr><tr><td>EORSSD</td><td>0.7949</td><td><b>0.8799</b></td><td>0.9000</td></tr><tr><td>ORSI4199</td><td>0.7623</td><td><b>0.8317</b></td><td>0.8566</td></tr></tbody></table>
+<p class="note">跨域结论要等三折全部完成后才能确定。这里的域内训练值包含被测数据集的训练标注，只作为同数据集参考；本次源域训练没有使用被留出数据集的任何训练标注或测试标注。</p></section>
+</main></body></html>

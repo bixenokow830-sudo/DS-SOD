@@ -1,0 +1,42 @@
+{
+  "protocol_version": "1.0",
+  "created_at": "2026-10-10",
+  "total_test_images": 2999,
+  "stem_hash_rule": "SHA256 of UTF-8 encoded GT basenames sorted ordinally and joined by LF, without trailing LF",
+  "datasets": {
+    "ORSSD": {
+      "image_dir": "ORSSD/Image-test",
+      "gt_dir": "ORSSD/GT-test",
+      "image_count": 200,
+      "gt_count": 200,
+      "image_extensions": [".jpg"],
+      "gt_extensions": [".png"],
+      "missing_image_stems": 0,
+      "extra_image_stems": 0,
+      "gt_stem_sha256": "75bbd379019418afdcb1deabb4d8dcc9596829f5fa898896205dc6820a8e6ea6"
+    },
+    "EORSSD": {
+      "image_dir": "EORSSD/test-images",
+      "gt_dir": "EORSSD/test-labels",
+      "image_count": 600,
+      "gt_count": 600,
+      "image_extensions": [".jpg"],
+      "gt_extensions": [".png"],
+      "missing_image_stems": 0,
+      "extra_image_stems": 0,
+      "gt_stem_sha256": "560ba6ab7363b64fbc93260fb2e7c0c13d45d035d08df0d341bdd17507498181"
+    },
+    "ORSI4199": {
+      "display_name": "ORSI-4199",
+      "image_dir": "ORSI-4199/Image-test",
+      "gt_dir": "ORSI-4199/GT-test",
+      "image_count": 2199,
+      "gt_count": 2199,
+      "image_extensions": [".jpg"],
+      "gt_extensions": [".png"],
+      "missing_image_stems": 0,
+      "extra_image_stems": 0,
+      "gt_stem_sha256": "3105c908b7c3db827cce91edde0bca100c0d7191ae4f0317c743a5cc5ee0e987"
+    }
+  }
+}

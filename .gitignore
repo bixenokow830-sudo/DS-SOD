@@ -1,0 +1,40 @@
+﻿
+# --- added by init-backup.ps1 ---
+# --- secrets and environment ---
+.env
+.env.*
+*.pem
+*.key
+*.p12
+id_rsa*
+credentials*
+*secret*
+# --- tool session/backup data (not project artifacts) ---
+*-backup-*/
+*-backup-*
+storages/
+sessions/
+# --- dependencies and build output ---
+node_modules/
+__pycache__/
+.venv/
+venv/
+dist/
+build/
+target/
+*.pyc
+*.class
+*.o
+*.obj
+*.exe
+*.dll
+# --- OS / editor junk ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+.idea/
+*.tmp
+*.log
+~$*
