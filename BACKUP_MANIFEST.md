@@ -25,6 +25,6 @@
 | `paper/figures/fig5_supervision_v0.9.png` | 157582 | `faa902e5f9a284d318d788478165dd141ec41586f74c16145d1ce4c6786b4b48` |
 | `README.md` | 2130 | `8c510459c16bc942609d9991c2003d1813dad69da2637a90c57f08969718a6fc` |
 | `requirements-pdf.txt` | 24 | `8a0179bb4073859d4de625455988e12565a05ea945d838b1af792a4f6feec5a9` |
-| `sync-artifacts-once.ps1` | 4049 | `88a091190ebbd778e8d759a579344e9c1658feae32c119f9d3a220d35cd31237` |
+| `sync-artifacts-once.ps1` | 4042 | `0ff7016d1c8bda306fc2e16a414abd62775359fa654f21c63aaa45e2e3899dfb` |
 | `sync.cmd` | 99 | `1a4bcd0f0f0eccab5fcb75bedc10e753f983147ca6a60fcc0a1f9a47c97b0981` |
 | `tools/build_review_pdf.py` | 12834 | `2ed77c8ddb86ea7f9cabb45e8e508e0002330d51ae73389713edc348a9f23a02` |

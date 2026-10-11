@@ -3,7 +3,7 @@ param()
 
 $ErrorActionPreference = 'Stop'
 $sourceRoot = 'D:\OneDrive\Desktop\my paper'
-$repoRoot = 'C:\Users\Wang siyi\Desktop\DS-SOD'
+$repoRoot = 'D:\OneDrive\Desktop\DS-SOD'
 $stateDir = Join-Path $env:LOCALAPPDATA 'DS-SOD-AutoSync'
 $statePath = Join-Path $stateDir 'state.json'
 $logPath = Join-Path $stateDir 'auto-sync.log'
