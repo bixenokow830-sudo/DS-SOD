@@ -2,11 +2,13 @@
 
 生成日期：2026-10-11
 
-本清单记录首次备份中的文件及 SHA-256，用于核验本地与远程内容。
+本清单记录备份中的文件及 SHA-256，用于核验本地与远程内容。
 
 | 文件 | 大小（字节） | SHA-256 |
 |---|---:|---|
-| `init-backup.ps1` | 18924 | `711de8411e0afa0335f9a4b9b26d3c9c2b358d817f6b1c26be35693b3508d2db` |
+| `.gitattributes` | 159 | `01be9779bf3309b05dc1e9846e8fd0396c71a76830dc7103c2bd5ef47bfb93f4` |
+| `.gitignore` | 515 | `ce643c8a068c3a005d49001505683aa7c4e8a54364acf309dbcd18ec4d52455e` |
+| `init-backup.ps1` | 18917 | `2c80400e0c7c644d3ba59b14a5d72973e77f6499a45bfd31909ff684a664e433` |
 | `output/pdf/DS-SOD-Hybrid_论文稿_2026-10-10.pdf` | 638594 | `7bb659e9dcb436fb9fb644373569be20b8becf77df48486ba31919d694118ebd` |
 | `paper/外部对比_事件1_测试划分清单_v1.0.json` | 1377 | `66cf94e7ad76759e6e973efb99b8af0bdd9a07ae032757b63a3128ccae7903b3` |
 | `paper/外部对比_事件1_评测协议_v1.0.md` | 9130 | `7245ea15ac67d3ebd779ed8d67e520e897c352b5f08397dfb99e5ff97055d8aa` |

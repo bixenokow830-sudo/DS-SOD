@@ -263,9 +263,7 @@ if ($staged.Count -eq 0) {
   Ok 'nothing to commit (working tree clean)'
   Head 'Last 5 commits'
   & git -C $ProjectDir log --oneline -5
-  exit $exitOk
-}
-
+} else {
 $suspects = @($staged | Where-Object { $_ -and (Test-SecretPath -Path $_) })
 if ($suspects.Count -gt 0) {
   Head 'Secret-looking files detected -- unstaging them'
@@ -302,6 +300,7 @@ if ($DryRun) { Ok "would commit with message: $Message"; exit $exitOk }
 $commitOut = & git -C $ProjectDir commit -q -m $Message 2>&1
 if ($LASTEXITCODE -ne 0) { Bad "commit failed"; $commitOut | ForEach-Object { Write-Host "   $_" }; exit $exitErr }
 Ok "committed: $Message"
+}
 
 Head 'Remote'
 $existingRemote = & git -C $ProjectDir remote get-url origin 2>$null
