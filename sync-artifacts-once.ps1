@@ -66,7 +66,7 @@ try {
     $dirty = @(& git -C $repoRoot status --porcelain 2>$null)
     $ahead = & git -C $repoRoot rev-list --count 'origin/main..HEAD' 2>$null
     if ($copied.Count -gt 0 -or $dirty.Count -gt 0 -or ([int]$ahead -gt 0)) {
-        $message = 'auto backup ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+        $message = 'conversation artifact backup ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
         $output = & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $repoRoot 'init-backup.ps1') `
             -ProjectDir $repoRoot -Message $message 2>&1
         $code = $LASTEXITCODE
