@@ -1,0 +1,436 @@
+# MGRQ-Net实验执行记录
+
+本文件按实验编号记录实际执行状态。计划定义见《MGRQ-Net分步骤实验执行计划书》。除非用户明确下令，不自动执行下一实验单元。
+
+---
+
+## M00｜只读环境与代码盘点
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED_WITH_WARNINGS` |
+| 执行时间 | 2026-10-18 21:47，Asia/Shanghai |
+| API调用 | 否 |
+| GPU训练 | 否 |
+| 已有权重修改 | 否 |
+| 审计产物 | `ds_sod/runs/mgrq/_audit/environment.json`、`inventory.md` |
+
+### 主要结果
+
+- Python 3.14.4、PyTorch 2.14.0+cu126、CUDA 12.6可用。
+- GPU为RTX 4060 Laptop 8GB；审计时空闲显存5596 MiB。
+- SAM2.1 base+权重与配置存在，CPU构建成功，参数量80,850,178。
+- 三个数据集共有4000张训练原图和2999张测试图，图像与GT无缺配。
+- 现有NPA-SAM两种子权重和LODO权重存在。
+- D盘空闲空间115.97 GiB。
+
+### 警告
+
+1. `sam2_prompts_train.json`有6999条，实际覆盖全部训练和测试图，MGRQ训练不得直接使用。
+2. 当前DeepSeek配置仍使用已退役别名`deepseek-v4-flash-vision-exp`，D10需改用`deepseek-flash`。
+3. 当前工作区不是Git仓库，正式开发前需要可恢复的代码版本快照。
+4. `scikit-image`未安装，但现有核心训练、预测和评测脚本未引用，不构成当前阻塞。
+
+### 结论
+
+M00通过。环境和资产足以进入数据协议审计，但必须先执行M01，不能直接启动MGRQ正式训练。
+
+### 建议下一命令
+
+```text
+执行 M01
+```
+
+---
+
+## M01｜数据清单与重复审计
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `BLOCKED_BY_CROSS_SPLIT_DUPLICATES` |
+| 执行时间 | 2026-10-18 21:54，Asia/Shanghai |
+| API调用 | 否 |
+| GPU训练 | 否 |
+| 原始数据修改 | 否 |
+| 固定种子 | 42 |
+| 清单规模 | train 3600 / dev 400 / test 2999 |
+
+### 已生成产物
+
+- `ds_sod/scripts/build_mgrq_manifests.py`
+- `ds_sod/banks/mgrq/manifests/train_dev_manifest.json`
+- `ds_sod/banks/mgrq/manifests/test_manifest.json`
+- `ds_sod/banks/mgrq/diagnostics/duplicate_audit.csv`
+- `ds_sod/banks/mgrq/diagnostics/duplicate_audit_summary.json`
+- `paper/MGRQ-Net_数据协议说明.md`
+
+### 验证结果
+
+- 6999条记录ID唯一，全部图像和GT路径存在。
+- 固定划分为3600张训练图、400张内部验证图；分层数量符合计划。
+- 发现61组跨官方训练/测试候选，其中2组字节完全重复、40组高置信同场景、19组需要人工复核。
+- 还发现158组跨数据集同split的字节重复，说明ORSSD与EORSSD不能在联合训练中直接按独立样本重复采样。
+- 已目视确认两组字节重复和多组重编码同场景；未删除、移动或覆盖任何原始文件。
+
+### 门禁结论
+
+M01的产物生成部分完成，但无泄漏验收失败。根据计划，停止后续正式训练并先确定去重协议。推荐保留官方测试集不变，排除所有与测试内容组相连的训练记录，对19组边界候选人工复核，然后重新冻结训练/内部验证清单。
+
+### 建议下一命令
+
+```text
+执行 M01-R1，采用严格去重协议并生成人工复核清单
+```
+
+---
+
+## M01-R1｜严格去重与人工复核清单
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED_WITH_QUARANTINED_REVIEW_GROUPS` |
+| 执行时间 | 2026-10-18 22:03，Asia/Shanghai |
+| API调用 | 否 |
+| GPU训练 | 否 |
+| 原始数据修改 | 否 |
+| 官方测试集 | 2999条，原样保留 |
+| 严格训练/验证 | train 2928 / dev 400 |
+
+### 严格处理结果
+
+- 排除29条与测试内容组相连的训练记录。
+- 隔离10条涉及未决候选的训练记录。
+- 训练侧可信内容组折叠633条重复记录。
+- 19条人工复核证据合并为8个独立内容组，并生成2页对照图。
+- 严格清单保留3328条，数据集分布为ORSSD 417、EORSSD 972、ORSI-4199 1939。
+- 内部验证集仍为ORSSD 60、EORSSD 140、ORSI-4199 200。
+
+### 验证
+
+- 严格测试清单与原官方测试清单逐记录一致。
+- 保留记录与排除日志交集为0。
+- 任一可信多成员内容组在严格清单中最多保留1条记录。
+- 3328条严格记录和2999条测试记录的图像/GT路径全部存在。
+- 人工复核项当前均为`PENDING`，相关训练记录已隔离，因此不阻塞使用严格清单进入M02。
+
+### 主要产物
+
+- `ds_sod/banks/mgrq/manifests/strict_train_dev_manifest.json`
+- `ds_sod/banks/mgrq/manifests/strict_test_manifest.json`
+- `ds_sod/banks/mgrq/diagnostics/strict_exclusion_log.csv`
+- `ds_sod/banks/mgrq/diagnostics/strict_content_groups.json`
+- `ds_sod/banks/mgrq/diagnostics/strict_protocol_summary.json`
+- `ds_sod/banks/mgrq/diagnostics/manual_review.csv`
+- `ds_sod/banks/mgrq/diagnostics/manual_review.md`
+- `ds_sod/banks/mgrq/diagnostics/manual_review_sheets_consolidated/`
+
+### 建议下一命令
+
+```text
+执行 M02
+```
+
+---
+
+## M02｜冻结评测实现
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED` |
+| 执行时间 | 2026-10-18 22:07，Asia/Shanghai |
+| API调用 | 否 |
+| GPU训练 | 否 |
+| 复评对象 | `hybrid-adapter`完整历史预测 |
+| 协议编号 | `mgrq-sod-eval-v1-1256c0d3c1a6` |
+
+### 结果
+
+- 对ORSSD 200张、EORSSD 600张、ORSI-4199 2199张预测重新计算Sα、Fβmax/Fβmean、Eξmax/Eξmean和MAE。
+- 21个历史字段全部精确复现，最大绝对差为0.0。
+- 三个数据集均无缺失预测、多余预测、尺寸不一致或不可读文件。
+- 检出ORSSD 4张、EORSSD 18张空GT；冻结协议保留这些样本以维持历史口径。ORSI-4199无空GT。
+- 评测实现SHA256已冻结；后续若哈希变化，必须升级协议版本并重评全部对比方法。
+
+### 产物
+
+- `ds_sod/scripts/freeze_mgrq_evaluation.py`
+- `ds_sod/runs/mgrq/_audit/m02/evaluation_freeze.json`
+- `ds_sod/runs/mgrq/_audit/m02/metric_version.json`
+- `ds_sod/runs/mgrq/_audit/m02/metric_comparison.csv`
+- `ds_sod/runs/mgrq/_audit/m02/integrity_audit.csv`
+- `paper/MGRQ-Net_评测协议说明.md`
+
+### 建议下一命令
+
+```text
+执行 M03
+```
+
+---
+
+## M03｜建立训练集内部验证基线
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `DIAGNOSTIC_COMPLETE_RETRAIN_REQUIRED` |
+| 执行时间 | 2026-10-18 22:17，Asia/Shanghai |
+| API调用 | 否 |
+| GPU训练 | 否 |
+| GPU推理 | 是，400张 |
+| 权重 | `p1c_traindist_e3.pt`，seed 42 |
+| 评测协议 | `mgrq-sod-eval-v1-1256c0d3c1a6` |
+
+### 完整性
+
+- 严格dev共400张：ORSSD 60、EORSSD 140、ORSI-4199 200。
+- 过滤得到400条历史逐图MLLM提示，共820个框，6张空提示；不含官方测试记录。
+- 400张预测全部存在，无缺失、多余、尺寸不一致或不可读文件。
+- EORSSD dev含7张空GT，按M02口径保留。
+
+### 诊断指标
+
+| 数据集 | Sα | Fβmax | Eξmax | MAE |
+|---|---:|---:|---:|---:|
+| ORSSD | 0.9010 | 0.9137 | 0.9785 | 0.0140 |
+| EORSSD | 0.9001 | 0.8418 | 0.9799 | 0.0119 |
+| ORSI-4199 | 0.9057 | 0.9274 | 0.9753 | 0.0212 |
+| 宏平均 | 0.9023 | 0.8943 | 0.9779 | 0.0157 |
+
+### 门禁结论
+
+现有权重训练时使用了全部4000张官方训练原图，包含当前400张dev；训练重叠率为100%。因此上述分数只用于确认工程链路，不能作为独立基线或用于MGRQ模型选择。
+
+M03的400张推理验收已完成，但“独立内部验证基线”未成立。M04由可选变为必需：必须使用严格train 2928条重训，并从严格train重新统计提示分布。
+
+### 产物
+
+- `ds_sod/scripts/prepare_eval_mgrq_m03.py`
+- `ds_sod/banks/mgrq/m03/npa_sam_dev_prompts.json`
+- `ds_sod/runs/mgrq/baselines/npa_sam_dev/baseline_summary.json`
+- `ds_sod/runs/mgrq/baselines/npa_sam_dev/seed42/metrics.json`
+- `ds_sod/runs/mgrq/baselines/npa_sam_dev/seed42/integrity.json`
+- `ds_sod/runs/mgrq/baselines/npa_sam_dev/seed42/per_image_metrics.csv`
+- `paper/MGRQ-Net_M03内部验证基线报告.md`
+
+### 建议下一命令
+
+```text
+执行 M04，seed=42，使用严格训练清单
+```
+
+---
+
+## M04｜严格清单重训NPA-SAM基线
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED` |
+| 执行时间 | 2026-10-19，Asia/Shanghai |
+| API调用 | 否 |
+| GPU训练 | 是，SAM2.1 Base+，3 epochs |
+| 随机种子 | 42 |
+| 严格划分 | train 2928 / dev 400，交集0 |
+| 官方测试数据使用 | 0 |
+| 评测协议 | `mgrq-sod-eval-v1-1256c0d3c1a6` |
+
+### 训练与完整性
+
+- 从严格train重新统计真实MLLM提示分布：5919个有效框，命中2925、错误2994。
+- 仅训练Mask Decoder，共4,215,109参数；生成3个epoch检查点和1个最终权重。
+- 4份权重逐张量检查全部为有限值，无NaN或Inf。
+- 最终权重SHA256为`57f7a34a32080e097d2fc0ae8a4239d4d60de127e9952820893e81dcaf15257a`。
+- 400张dev预测全部有效；缺失0、多余0、尺寸不一致0、不可读0。
+
+### 严格dev指标
+
+| 数据集 | Sα | Fβmax | Fβmean | Eξmax | Eξmean | MAE |
+|---|---:|---:|---:|---:|---:|---:|
+| ORSSD | 0.8881 | 0.8993 | 0.8282 | 0.9578 | 0.9142 | 0.0197 |
+| EORSSD | 0.8924 | 0.8391 | 0.7732 | 0.9746 | 0.9365 | 0.0136 |
+| ORSI-4199 | 0.8956 | 0.9193 | 0.8660 | 0.9716 | 0.9433 | 0.0245 |
+| **宏平均** | **0.8920** | **0.8859** | **0.8225** | **0.9680** | **0.9313** | **0.0193** |
+
+### 门禁结论
+
+严格train/dev零重叠，M04成为可用于后续模型选择的有效内部验证基线。其宏平均Sα与旧权重历史官方test量级相当（0.8920对0.8923）；M03的0.9023因100%训练重叠继续仅保留为工程诊断值。
+
+### 主要产物
+
+- `ds_sod/scripts/eval_mgrq_m04.py`
+- `ds_sod/banks/mgrq/m04/prompt_stats_strict_train.json`
+- `ds_sod/runs/mgrq/baselines/npa_sam_strict_s42/weights/`
+- `ds_sod/runs/mgrq/baselines/npa_sam_strict_s42/baseline_summary.json`
+- `ds_sod/runs/mgrq/baselines/npa_sam_strict_s42/training_config_and_provenance.json`
+- `ds_sod/runs/mgrq/baselines/npa_sam_strict_s42/dev/`
+- `paper/MGRQ-Net_M04严格训练基线报告.md`
+
+### 建议下一命令
+
+```text
+执行 D10
+```
+
+---
+
+## D10｜新增MGRQ提示生成器
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED` |
+| 执行时间 | 2026-10-19 17:07，Asia/Shanghai |
+| API调用 | 0 |
+| API费用 | 0 |
+| 请求模型 | `deepseek-flash` |
+| 思考模式 | `disabled` |
+| 输出协议 | `mgrq_semantic_queries_v1` |
+| 提示模板 | `mgrq_prompt_v1_2026-10-19` |
+
+### 实现结果
+
+- 新增`generate_mgrq_prompts.py`，没有修改旧`pilot_mllm.py`、旧`llm.py`或既有提示库。
+- 每张图使用单次结构化输出，字段包含短语、归一化框、显著置信度、理由、干扰物和空场景概率。
+- 框统一为整数`[x1,y1,x2,y2]`和`[0,1000]`，非法范围、逆序坐标、缺失字段与额外字段均被拒绝。
+- 密钥只从`DEEPSEEK_API_KEY`环境变量读取；干跑不创建API客户端。
+- 原始响应与解析JSON分开保存，并记录图像哈希、清单哈希、模板版本、请求模型和服务返回模型。
+- 实现缓存签名、断点续跑、真实调用重试和错误日志。
+
+### 验收
+
+- 4项离线单元检查全部通过。
+- 严格dev首条记录完成完整离线解析、校验和落盘，状态`parsed_ok`。
+- 相同命令再次运行返回`skipped_current_cache`，证明版本化断点续跑生效。
+- API调用0，费用0，未发现密钥泄漏。
+
+### 主要产物
+
+- `ds_sod/scripts/generate_mgrq_prompts.py`
+- `ds_sod/tests/test_generate_mgrq_prompts.py`
+- `ds_sod/runs/mgrq/d10_acceptance_v1/`
+- `paper/MGRQ-Net_D10提示生成器报告.md`
+
+### 建议下一命令
+
+```text
+执行 D11
+```
+
+---
+
+## D11｜MGRQ提示生成器五图干跑
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED` |
+| 执行时间 | 2026-10-19 17:16–17:19，Asia/Shanghai |
+| API调用 | 0 |
+| API费用 | 0 |
+| 严格dev样本 | 5 |
+| 首次解析成功 | 5/5 |
+| 二次缓存跳过 | 5/5 |
+| 自动测试 | 7/7通过 |
+
+### 验收结果
+
+- 5份原始响应和5份解析JSON分别保存，无缺失、无重复。
+- 二次运行全部返回`skipped_current_cache`，API调用仍为0。
+- 逆序坐标被拒绝并记录，未静默交换或裁剪。
+- 缺失图像和损坏图像均在处理前被识别并写入错误日志。
+- 空候选正常保存为合法空场景，`empty_scene_probability=0.98`。
+- D11日志和产物未发现密钥内容。
+
+### 主要产物
+
+- `ds_sod/runs/mgrq/d11_dry_run/`
+- `ds_sod/runs/mgrq/d11_empty_candidate/`
+- `ds_sod/runs/mgrq/d11_invalid_bbox/`
+- `ds_sod/runs/mgrq/d11_bad_images/`
+- `ds_sod/runs/mgrq/d11_verification.json`
+- `paper/MGRQ-Net_D11干跑验收报告.md`
+
+### 建议下一命令
+
+```text
+执行 D12
+```
+
+---
+
+## D12｜DeepSeek真实API冒烟测试
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED` |
+| 执行时间 | 2026-10-19 17:33–17:34，Asia/Shanghai |
+| 请求模型 | `deepseek-flash` |
+| 思考模式 | `disabled` |
+| 严格dev样本 | 20，五类场景各4张 |
+| API成功率 | 20/20，100% |
+| JSON解析率 | 20/20，100% |
+| 坐标合法率 | 121/121，100% |
+| 重试 | 0 |
+| 空回复 | 0 |
+| 费用估算上界 | 约0.00982美元 |
+
+### 结果
+
+- 20次真实视觉API调用全部首次成功，服务返回模型字段均为`deepseek-flash`。
+- 共得到75个显著候选和46个干扰区域；所有121个框通过归一化坐标检查。
+- 人工检查20张框叠加图，未发现系统性x/y交换、坐标逆序或整体镜像偏移。
+- 平均延迟2.253秒/图，P95为3.188秒；总token 16,703。
+- 日志和产物未发现密钥；仅原图发送给API，GT和旧提示只用于抽样分层。
+- 复杂场景存在候选较多或干扰框偏宽的现象，留待D13用GT定量诊断，不在D12添加逐图规则。
+
+### 主要产物
+
+- `ds_sod/banks/mgrq/manifests/d12_smoke_manifest.json`
+- `ds_sod/banks/mgrq/d12_smoke/`
+- `ds_sod/runs/mgrq/d12_smoke/`
+- `ds_sod/runs/mgrq/d12_smoke/validation_summary.json`
+- `paper/MGRQ-Net_D12真实API冒烟测试报告.md`
+
+### 建议下一命令
+
+```text
+执行 D13
+```
+
+---
+
+## D13｜300张API试点与提示模板冻结
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED_SINGLE_IMAGE_TEMPLATE_FROZEN` |
+| 执行日期 | 2026-10-19，Asia/Shanghai |
+| 样本 | ORSSD 60、EORSSD 90、ORSI-4199 150 |
+| D13新增API请求 | 280 |
+| D12缓存复用 | 20 |
+| API响应成功率 | 280/280，100% |
+| 最终JSON解析率 | 300/300，100% |
+| 请求模型 | `deepseek-flash` |
+| 提示模板 | `mgrq_prompt_v1_2026-10-19` |
+| 模板决策 | 冻结单整图，不执行2×2切片 |
+| D13新增费用估算上界 | 约0.1191美元 |
+
+### 验收结果
+
+- 300个严格dev记录全部具有原始响应和解析缓存，记录ID无缺失、无重复。
+- 首轮有5份响应因干扰物携带可选`saliency_confidence`未通过严格解析；校验器兼容该合法可选字段后，从原始响应本地恢复5/5，没有重复调用API。
+- 相比旧提示库，候选框严格匹配率提高3.63个百分点，GT组件召回率提高22.76个百分点，像素召回率提高11.98个百分点。
+- 小目标组件召回率由25.19%提高到52.26%，未触发“整图+2×2切片”对照。
+- 框并集像素精确率下降5.80个百分点，严重失配候选比例增加7.11个百分点；后续必须依靠可靠性校准、负查询和发现查询，不能直接把MLLM框作为最终掩码。
+- 8项生成器单元测试全部通过；缓存清单一致，未发现密钥内容。
+
+### 主要产物
+
+- `ds_sod/banks/mgrq/manifests/d13_pilot_manifest.json`
+- `ds_sod/banks/mgrq/d13_pilot/`
+- `ds_sod/runs/mgrq/d13_pilot/prompt_analysis.json`
+- `ds_sod/runs/mgrq/d13_pilot/per_image_prompt_metrics.csv`
+- `paper/MGRQ-Net_D13_300张API试点报告.md`
+
+### 建议下一命令
+
+```text
+执行 D14
+```
