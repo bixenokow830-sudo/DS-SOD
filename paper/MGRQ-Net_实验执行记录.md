@@ -622,3 +622,44 @@ M03的400张推理验收已完成，但“独立内部验证基线”未成立�
 ```text
 执行 I22
 ```
+
+---
+
+## I22｜候选查询构造器
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED` |
+| 执行时间 | 2026-10-20，Asia/Shanghai |
+| 视觉输入 | 256维SAM2特征 |
+| 文本输入 | I21冻结512维CLIP特征 |
+| 输出查询 | 256维 |
+| RoI池化 | 3×3双线性采样后平均 |
+| 查询类型 | 可信、不确定、低置信、干扰、回退，共5类 |
+| 可训练参数 | 1,073,536 |
+| I22 API调用 | 0 |
+
+### 验收结果
+
+- 实现视觉、文本、框几何、置信度和查询类型五分支融合，输出固定256维查询。
+- 支持不同图像尺寸、空候选、1候选、5候选和任意批内padding；无效槽严格置零。
+- 冻结框修复顺序：裁剪、重排、退化扩展；NaN/Inf直接拒绝，并返回可追踪修复标志。
+- 9项单元测试全部通过。
+- 使用真实D14框和I21文本缓存完成4类记录冒烟验收，输出`[4,5,256]`、无NaN或Inf。
+- SAM2与CLIP输入没有梯度，21/21个I22可训练参数张量获得有限梯度。
+- 本阶段没有调用DeepSeek API，没有启动长训练。
+
+### 主要产物
+
+- `ds_sod/mgrq/query_builder.py`
+- `ds_sod/configs/mgrq_i22_query_builder.json`
+- `ds_sod/tests/test_mgrq_query_builder.py`
+- `ds_sod/scripts/validate_mgrq_query_builder.py`
+- `ds_sod/banks/mgrq/diagnostics/i22_query_builder_validation.json`
+- `paper/MGRQ-Net_I22_候选查询构造器报告.md`
+
+### 建议下一命令
+
+```text
+执行 I23
+```
