@@ -663,3 +663,42 @@ M03的400张推理验收已完成，但“独立内部验证基线”未成立�
 ```text
 执行 I23
 ```
+
+---
+
+## I23｜组件级匈牙利匹配器
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED` |
+| 执行时间 | 2026-10-20，Asia/Shanghai |
+| 匹配代价 | `2×Dice + 2×BCE + 1×L1框代价` |
+| 框格式 | 归一化`xyxy`，范围`[0,1]` |
+| 语义代价 | 第一版不使用 |
+| 最大匹配代价 | 4.0 |
+| 未匹配查询标签 | `-1` |
+| I23 API调用 | 0 |
+
+### 验收结果
+
+- 实现查询与GT组件一对一匈牙利分配，每个查询和GT最多出现一次。
+- 匹配输出显式包含已匹配索引、未匹配查询、未匹配GT、匹配代价和`target_for_query`。
+- 代价超过4.0的明显错误配对被拒绝；零logit中性初始查询仍可匹配，防止训练初期监督中断。
+- 11项单元测试全部通过，覆盖单查询、重复查询、错误查询、查询少于/多于组件、空GT、空查询和padding。
+- I20真实记录`EORSSD/train/0027`验收中，3个GT分别匹配查询0、1、2；重复查询3和错误查询4均标记为`-1`。
+- 本阶段不需要GPU，没有调用DeepSeek API，也没有启动长训练。
+
+### 主要产物
+
+- `ds_sod/mgrq/matcher.py`
+- `ds_sod/configs/mgrq_i23_matcher.json`
+- `ds_sod/tests/test_mgrq_matcher.py`
+- `ds_sod/scripts/validate_mgrq_matcher.py`
+- `ds_sod/banks/mgrq/diagnostics/i23_matcher_validation.json`
+- `paper/MGRQ-Net_I23_组件级匈牙利匹配器报告.md`
+
+### 建议下一命令
+
+```text
+执行 I24
+```
