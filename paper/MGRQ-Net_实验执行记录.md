@@ -702,3 +702,45 @@ M03的400张推理验收已完成，但“独立内部验证基线”未成立�
 ```text
 执行 I24
 ```
+
+---
+
+## I24｜基础查询解码器与小样本过拟合
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED` |
+| 执行时间 | 2026-10-20，Asia/Shanghai |
+| 解码器 | 3层、8头、256维Transformer Decoder |
+| 查询 | 最多5个MLLM查询＋5个可学习发现查询 |
+| 掩码输出 | 单阶段组件mask logits |
+| 损失 | 匹配查询BCE+Dice，未匹配查询0.1×背景BCE |
+| 过拟合样本 | 严格train 12张，三个数据集各4张 |
+| 实际训练步数 | 300，seed=42 |
+| 可训练参数 | 4,433,024 |
+| I24 API调用 | 0 |
+
+### 验收结果
+
+- 损失从1.6857降至0.0398，下降97.64%。
+- 训练掩码平均并集IoU达到0.9519，平均匹配组件IoU达到0.8891。
+- 12/12样本均来自严格train；未使用dev或官方test图像。
+- 使用真实冻结SAM2.1 Base+图像特征和I21文本缓存；SAM2与CLIP均不更新。
+- I24专项测试6/6通过，I22–I24相关测试合计26/26通过。
+- 检查点84/84状态张量全部有限，参数量与配置一致。
+- 本阶段使用本地GPU，没有调用DeepSeek API。
+
+### 主要产物
+
+- `ds_sod/mgrq/reliable_query_decoder.py`
+- `ds_sod/configs/mgrq_i24_decoder.json`
+- `ds_sod/tests/test_mgrq_decoder.py`
+- `ds_sod/scripts/overfit_mgrq_i24.py`
+- `ds_sod/runs/mgrq/i24_overfit_s42/`
+- `paper/MGRQ-Net_I24_基础查询解码器与过拟合报告.md`
+
+### 建议下一命令
+
+```text
+执行 I25
+```
