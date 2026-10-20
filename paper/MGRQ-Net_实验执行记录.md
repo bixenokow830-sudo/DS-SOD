@@ -784,3 +784,44 @@ M03的400张推理验收已完成，但“独立内部验证基线”未成立�
 ```text
 执行 I26
 ```
+
+---
+
+## I26｜发现查询、适配器与细化模块单测
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED` |
+| 执行时间 | 2026-10-20，Asia/Shanghai |
+| 发现查询 | 5个×256维，1,280参数 |
+| 后层适配器 | 256→64→256残差瓶颈，33,728参数 |
+| 两阶段细化 | 掩码池化＋查询更新＋精细掩码，592,896参数 |
+| 专项单元测试 | 10/10通过 |
+| 联合验收 | 9/9通过 |
+| I26 API调用 | 0 |
+
+### 验收结果
+
+- 关闭MLLM后，5个发现查询仍可独立前向，基础解码器输出`[2,5,8,8]`且数值有限。
+- 后层适配器采用残差瓶颈结构，上投影零初始化；初始输出与输入最大绝对误差为0.0。
+- 全空/近空掩码的池化结果严格为零，细化输出无NaN或Inf。
+- 模拟一步优化时冻结主干无梯度且权重不变，只有指定适配器参数更新。
+- 无效查询的细化查询严格置零，细化掩码logit固定为-20。
+- 本阶段只进行CPU单测，没有启动正式训练，没有调用DeepSeek API。
+
+### 主要产物
+
+- `ds_sod/mgrq/discovery_queries.py`
+- `ds_sod/mgrq/sam2_adapters.py`
+- `ds_sod/mgrq/mask_refinement.py`
+- `ds_sod/configs/mgrq_i26_modules.json`
+- `ds_sod/tests/test_mgrq_i26_modules.py`
+- `ds_sod/scripts/validate_mgrq_i26_modules.py`
+- `ds_sod/banks/mgrq/diagnostics/i26_modules_validation.json`
+- `paper/MGRQ-Net_I26_发现查询适配器与细化模块单测报告.md`
+
+### 建议下一命令
+
+```text
+执行 A30，seed=42
+```
