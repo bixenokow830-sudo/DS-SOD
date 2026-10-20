@@ -744,3 +744,43 @@ M03的400张推理验收已完成，但“独立内部验证基线”未成立�
 ```text
 执行 I25
 ```
+
+---
+
+## I25｜查询可靠性头与人工小数据验证
+
+| 字段 | 记录 |
+|---|---|
+| 状态 | `PASSED` |
+| 执行时间 | 2026-10-20，Asia/Shanghai |
+| 输入 | I24 解码后的 256 维查询 |
+| 输出 | `p_obj`、`p_iou`、`r_i=p_obj×p_iou` |
+| 可靠性头参数 | 33,666 |
+| 人工数据 | 160 条查询（正32、负128） |
+| 训练/留出 | 128/32，seed=42 |
+| I25 API调用 | 0 |
+
+### 验收结果
+
+- 独立人工留出集正查询平均可靠性0.819689，负查询0.00000461，差值0.819684。
+- 目标存在分类准确率100%，可靠性标准差0.344802，未出现全0或全1塌缩。
+- 损失由0.171729降至0.000000529，所有预设阈值通过。
+- 已匹配查询监督为1；未匹配、背景与重复查询监督为0；质量目标为实际掩码IoU。
+- Focal Loss使用`alpha=0.75`、`gamma=2.0`，质量分支使用Smooth L1。
+- I25专项单元测试6/6通过，检查点状态张量全部有限。
+- 本阶段使用CPU，没有调用DeepSeek API；结果仅验证受控数据上的可优化性，不代表真实开发集泛化。
+
+### 主要产物
+
+- `ds_sod/mgrq/reliability_head.py`
+- `ds_sod/configs/mgrq_i25_reliability.json`
+- `ds_sod/tests/test_mgrq_reliability.py`
+- `ds_sod/scripts/validate_mgrq_reliability.py`
+- `ds_sod/runs/mgrq/i25_reliability_s42/`
+- `paper/MGRQ-Net_I25_可靠性头验证报告.md`
+
+### 建议下一命令
+
+```text
+执行 I26
+```
