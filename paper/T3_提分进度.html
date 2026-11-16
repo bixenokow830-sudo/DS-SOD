@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>DS-SOD · T3 提分实验实时进度</title>
+<meta http-equiv="refresh" content="5">
+<style>
+:root{--bg:#0f1115;--card:#181b22;--line:#2a2f3a;--fg:#e6e9ef;--mut:#8b93a3;
+--acc:#4c8dff;--ok:#31c48d;--warn:#f0a53f;--bad:#ef5b6b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:14px/1.55 "Microsoft YaHei",system-ui,-apple-system,sans-serif}
+header{padding:18px 24px 12px;border-bottom:1px solid var(--line);
+display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-size:19px;font-weight:650}
+.sub{color:var(--mut);font-size:12.5px;margin-top:4px}
+.kpis{display:flex;gap:10px;flex-wrap:wrap;margin:14px 24px 4px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;
+padding:10px 14px;min-width:140px}
+.kv{font-size:19px;font-weight:650;font-variant-numeric:tabular-nums}
+.kl{color:var(--mut);font-size:11.5px;margin-top:2px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+gap:12px;margin:12px 24px}
+.card{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--mut);
+border-radius:10px;padding:12px 14px}
+.card.run{border-left-color:var(--acc)} .card.done{border-left-color:var(--ok)}
+.chd{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.badge{font-size:11px;padding:1px 7px;border-radius:20px;background:#232833;color:var(--mut)}
+.card.run .badge{background:#16305c;color:#9dc0ff}
+.card.done .badge{background:#12362a;color:#7ee2b8}
+.pct{margin-left:auto;color:var(--mut);font-size:12px}
+.ct{font-size:12.8px;color:#cdd4e0} .cs{font-size:11.5px;color:var(--mut);margin-top:5px}
+.note{color:#7d8698}
+.bar{height:5px;background:#232833;border-radius:4px;margin:7px 0 3px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#4c8dff,#31c48d)}
+section{margin:22px 24px}
+h2{font-size:14.5px;margin:0 0 9px;color:#cfd6e4;font-weight:620}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);
+border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:12.8px}
+.tbl th,.tbl td{padding:7px 11px;border-bottom:1px solid var(--line);text-align:left}
+.tbl th{background:#1d212a;color:var(--mut);font-weight:600}
+.tbl tr:last-child td{border-bottom:none}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+.pos{color:var(--ok)} .neg{color:var(--bad)}
+tr.best td{background:#12271f}
+.foot{color:var(--mut);font-size:11.5px;margin:22px 24px 40px;line-height:1.85}
+code{background:#1b1f27;padding:1px 5px;border-radius:4px;font-size:12px}
+</style></head><body>
+<header>
+  <div><h1>DS-SOD · T3 提分实验 · 实时进度</h1>
+  <div class="sub">三条独立改动：损失函数（Tversky，抑误检）· 提示分布（真实 MLLM 框经验分布）·
+  候选选择规则（去掉训练时的真值泄漏）｜dev 基线 Sα 0.9162 ｜ 旧最好三集 0.8811 →
+  <b>两种子均 0.8961（+1.49 点，判据通过）</b></div></div>
+  <div class="sub">文件快照版（页面每 5 秒自动重新加载；若要真正的实时流，请开 <a href="http://127.0.0.1:43121/t3">http://127.0.0.1:43121/t3</a>）</div>
+</header>
+<div class="kpis">
+  <div class="kpi"><div class="kv">0.9162</div><div class="kl">基线 dev Sα（现有最好校准器）</div></div>
+  <div class="kpi"><div class="kv">+0.0141</div><div class="kl">扫描中最好 ΔSα</div></div>
+  <div class="kpi"><div class="kv">0.8961</div><div class="kl">当前最好（T3 两种子均 Sα）</div></div>
+  <div class="kpi"><div class="kv">有效</div><div class="kl">判据（≥ +0.005 才算有效）</div></div>
+</div>
+<section style="margin-top:8px"><h2>正在运行的任务（实时）</h2><div class="sub" style="margin:0 24px">当前没有检测到正在运行的任务。（训练进度来自 adapter/*.progress.txt，推理进度来自出图目录计数）</div></section>
+<div class="cards"><div class="card done">
+          <div class="chd"><span class="badge">已完成</span>
+          <b>T3S</b><span class="pct">100.0%</span></div>
+          <div class="ct">校准器训练配方扫描（dev 50，800 张 × 1 epoch）</div>
+          <div class="bar"><i style="width:100.0%"></i></div>
+          <div class="cs">6/6 配方 · 已用 19.4 分
+            · 预计剩余 完成</div>
+          <div class="cs note">最优 t3-real-13-score +0.0000；无有效改进</div></div><div class="card done">
+          <div class="chd"><span class="badge">已完成</span>
+          <b>T3F</b><span class="pct">100.0%</span></div>
+          <div class="ct">最优配方全量训练（4000 张 × 3 epoch）+ 三测试集评测</div>
+          <div class="bar"><i style="width:100.0%"></i></div>
+          <div class="cs">2/2 配方 · 已用 1.12 小时
+            · 预计剩余 完成</div>
+          <div class="cs note">全量评测完成</div></div></div>
+<section><h2>配方扫描（dev 50，便宜筛选：800 张 × 1 epoch）</h2>
+<table class="tbl"><thead><tr><th>配方</th><th>说明</th><th class="num">dev Sα</th>
+<th class="num">ΔSα</th><th class="num">Fβmean</th><th class="num">MAE</th></tr></thead>
+<tbody><tr class=""><td>t3-tv07</td><td>Tversky α=0.7（偏保守，抑误检）</td><td class="num">0.8700</td><td class="num neg">-0.0462</td><td class="num">0.7858</td><td class="num">0.0292</td></tr><tr class=""><td>t3-tv06</td><td>Tversky α=0.6（中等偏保守）</td><td class="num">0.9056</td><td class="num neg">-0.0106</td><td class="num">0.8475</td><td class="num">0.0168</td></tr><tr class=""><td>t3-tv08</td><td>Tversky α=0.8（强抑误检，牺牲召回）</td><td class="num">0.8603</td><td class="num neg">-0.0559</td><td class="num">0.8075</td><td class="num">0.0222</td></tr><tr class=""><td>t3-bt07</td><td>BCE+IoU 再加 Tversky α=0.7（保守增强）</td><td class="num">0.9151</td><td class="num neg">-0.0011</td><td class="num">0.8533</td><td class="num">0.0140</td></tr><tr class=""><td>t3-bt07w02</td><td>Tversky 仅作轻量正则项（权重 0.2）</td><td class="num">0.9081</td><td class="num neg">-0.0081</td><td class="num">0.8431</td><td class="num">0.0154</td></tr><tr class=""><td>t3-bt07w005</td><td>Tversky 极轻正则项（权重 0.05）</td><td class="num">0.9168</td><td class="num pos">+0.0006</td><td class="num">0.8407</td><td class="num">0.0155</td></tr><tr class=""><td>t3-real-11</td><td>真实 MLLM 提示分布（1 命中 + 1 错框）</td><td class="num">0.9258</td><td class="num pos">+0.0096</td><td class="num">0.8518</td><td class="num">0.0175</td></tr><tr class=""><td>t3-real-12</td><td>真实分布，错框加倍（2 错框）</td><td class="num">0.9013</td><td class="num neg">-0.0149</td><td class="num">0.8334</td><td class="num">0.0201</td></tr><tr class=""><td>t3-real-21</td><td>真实分布，命中框加倍</td><td class="num">0.8771</td><td class="num neg">-0.0391</td><td class="num">0.7912</td><td class="num">0.0269</td></tr><tr class=""><td>t3-score</td><td>候选按 SAM2 自报分选（与推理一致）</td><td class="num">0.9139</td><td class="num neg">-0.0023</td><td class="num">0.8371</td><td class="num">0.0192</td></tr><tr class=""><td>t3-real-11-tv07</td><td>真实分布 + Tversky α=0.7</td><td class="num">0.8824</td><td class="num neg">-0.0338</td><td class="num">0.8314</td><td class="num">0.0244</td></tr><tr class=""><td>t3-real-11-bt07w02</td><td>真实分布 + Tversky 轻正则</td><td class="num">0.9053</td><td class="num neg">-0.0109</td><td class="num">0.8497</td><td class="num">0.0198</td></tr><tr class=""><td>t3-real-12-tv07</td><td>真实分布(错框加倍) + Tversky α=0.7</td><td class="num">0.8717</td><td class="num neg">-0.0445</td><td class="num">0.8396</td><td class="num">0.0188</td></tr><tr class="best"><td>t3-real-12-score</td><td>真实分布(错框加倍) + 候选按自报分</td><td class="num">0.9303</td><td class="num pos">+0.0141</td><td class="num">0.8708</td><td class="num">0.0149</td></tr></tbody></table></section>
+<section><h2>全量训练 + 三测试集评测（4000 张 × 3 epoch）</h2>
+<table class="tbl"><thead><tr><th>配方</th><th class="num">三集均 Sα</th><th class="num">Δ vs 0.8811</th>
+<th class="num">均 MAE</th><th class="num">ORSSD</th><th class="num">EORSSD</th>
+<th class="num">ORSI-4199</th></tr></thead><tbody><tr class="best"><td>t3-real-12-score</td><td class="num">0.8983</td><td class="num pos">+0.0172</td><td class="num">0.0196</td><td class="num">0.9255</td><td class="num">0.9097</td><td class="num">0.8596</td></tr><tr><td>t3-real-12-score-s43</td><td colspan="7" class="neg">失败</td></tr><tr><td>④ 真实提示分布协议 · 种子 42</td><td class="num">0.8983</td><td class="num pos">+0.0172</td><td class="num">0.0196</td><td class="num">0.9255</td><td class="num">0.9097</td><td class="num">0.8596</td></tr><tr class="best"><td>④ 真实提示分布协议 · <b>种子 43（复现）</b></td><td class="num">0.8939</td><td class="num pos">+0.0128</td><td class="num">0.0229</td><td class="num">0.9215</td><td class="num">0.9075</td><td class="num">0.8526</td></tr><tr class="best"><td><b>④ 两种子平均（论文报告口径）</b></td><td class="num"><b>0.8961</b></td><td class="num pos"><b>+0.0150</b></td><td class="num">—</td><td class="num">0.9235</td><td class="num">0.9086</td><td class="num">0.8561</td></tr></tbody></table></section>
+<div class="foot">
+判据（事先约定）：dev Sα 相对基线提升 ≥ <b>+0.005</b> 视为有效；≥ <b>+0.02</b> 才上全量 + 测试集
+（避免用噪声去烧 41 分钟训练与三集推理）。<br>
+三条改动的依据均来自本仓库实测：① Tversky —— T2 证明 Sα 对误检的敏感度远高于漏检（多一块假前景
+掉 10～30 点），而 BCE+IoU 对 FP/FN 对称、与下游指标不匹配；② 真实提示分布 —— 实测命中框中心偏移
+p10/p90 为 −0.10/+0.10 但<b>选错框的中心偏移均值达 −1.52 个目标边长</b>，且占全部框的 53%，
+"GT 框 ± 抖动"结构上造不出这类输入；③ 候选选择 —— 训练时按与 GT 的 IoU 选候选存在真值泄漏，
+推理时只能用 SAM2 自报分，两者不一致。<br>
+dev 50 ⊂ ORSSD 训练集（与训练集重叠），dev 数值偏乐观，仅用于选配方；成绩数字一律取测试集。
+</div>
+<script>
+if (false) { setTimeout(() => location.reload(), 5000); }
+</script>
+</body></html>

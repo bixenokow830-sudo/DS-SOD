@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>DS-SOD · T2 补漏实验实时进度</title>
+<meta http-equiv="refresh" content="5">
+<style>
+:root{--bg:#0f1115;--card:#181b22;--line:#2a2f3a;--fg:#e6e9ef;--mut:#8b93a3;
+--acc:#4c8dff;--ok:#31c48d;--warn:#f0a53f;--bad:#ef5b6b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:14px/1.55 "Microsoft YaHei",system-ui,-apple-system,sans-serif}
+header{padding:18px 24px 12px;border-bottom:1px solid var(--line);
+display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-size:19px;font-weight:650}
+.sub{color:var(--mut);font-size:12.5px;margin-top:4px}
+.kpis{display:flex;gap:10px;flex-wrap:wrap;margin:14px 24px 4px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;
+padding:10px 14px;min-width:132px}
+.kv{font-size:19px;font-weight:650;font-variant-numeric:tabular-nums}
+.kl{color:var(--mut);font-size:11.5px;margin-top:2px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
+gap:12px;margin:12px 24px}
+.card{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--mut);
+border-radius:10px;padding:12px 14px}
+.card.run{border-left-color:var(--acc)}
+.card.done{border-left-color:var(--ok)}
+.chd{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.badge{font-size:11px;padding:1px 7px;border-radius:20px;background:#232833;color:var(--mut)}
+.card.run .badge{background:#16305c;color:#9dc0ff}
+.card.done .badge{background:#12362a;color:#7ee2b8}
+.pct{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--mut);font-size:12px}
+.ct{font-size:12.8px;color:#cdd4e0}
+.cs{font-size:11.5px;color:var(--mut);margin-top:5px}
+.note{color:#7d8698}
+.bar{height:5px;background:#232833;border-radius:4px;margin:7px 0 3px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#4c8dff,#31c48d)}
+section{margin:22px 24px}
+h2{font-size:14.5px;margin:0 0 9px;color:#cfd6e4;font-weight:620}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);
+border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:12.8px}
+.tbl th,.tbl td{padding:7px 11px;border-bottom:1px solid var(--line);text-align:left}
+.tbl th{background:#1d212a;color:var(--mut);font-weight:600}
+.tbl tr:last-child td{border-bottom:none}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+.pos{color:var(--ok)} .neg{color:var(--bad)}
+tr.best td{background:#12271f}
+tr.drop td{color:#9aa3b2} tr.keep td{color:#7ee2b8;font-weight:620}
+.logs{background:#0b0d11;border:1px solid var(--line);border-radius:10px;
+padding:10px 12px;max-height:290px;overflow:auto;font:12px/1.7 ui-monospace,Consolas,monospace}
+.verdict{margin:14px 24px;padding:14px 16px;border-radius:10px;background:#2a1519;
+border:1px solid #5c2b34;border-left:4px solid var(--bad);font-size:13px;line-height:1.85}
+.verdict b{color:#ffb3bd}
+.verdict code{background:#1b1114;padding:1px 5px;border-radius:4px;font-size:12px}
+.lg{white-space:pre-wrap;word-break:break-all}
+.ts{color:#5c667a;margin-right:8px}
+.sid{display:inline-block;min-width:26px;color:#6f9bff;margin-right:8px}
+.foot{color:var(--mut);font-size:11.5px;margin:22px 24px 40px;line-height:1.8}
+a{color:#7aa7ff}
+</style></head><body>
+<header>
+  <div><h1>DS-SOD · T2 补漏实验 · 实时进度</h1>
+  <div class="sub">类无关候选来源补全漏检（FN oracle 剩余空间 +0.97）·
+  页面刷新时间 2026-10-02 21:28:22</div></div>
+  <div class="sub">静态快照（运行 <code>T2_dashboard.py --watch</code> 可热更新）</div>
+</header>
+<div class="kpis">
+    <div class="kpi"><div class="kv">3/4</div><div class="kl">阶段完成</div></div>
+    <div class="kpi"><div class="kv">待启动</div><div class="kl">当前阶段</div></div>
+    <div class="kpi"><div class="kv">0.9169</div><div class="kl">dev 最优 T2 Sα</div></div>
+    <div class="kpi"><div class="kv pos">+0.0007</div><div class="kl">ΔSα vs 仅主分支</div></div>
+    <div class="kpi"><div class="kv">0.9162</div><div class="kl">dev 主分支基线 Sα</div></div>
+    <div class="kpi"><div class="kv">候选无效（增益 &lt; +0.0</div><div class="kl">判据</div></div>
+    <div class="kpi"><div class="kv">0.8961</div><div class="kl">当前最好（T3 两种子均 Sα，见 /t3）</div></div>
+    </div>
+<section style="margin-top:8px"><h2>正在运行的任务（实时）</h2><div class="sub" style="margin:0 24px">当前没有检测到正在运行的任务。（训练进度来自 adapter/*.progress.txt，推理进度来自出图目录计数）</div></section>
+
+<div class="verdict">
+<b>判决：类无关候选补漏在本任务上不可兑现（负结果，按事先约定的判据停止）</b><br>
+判据（实验前写定）：dev Sα 相对"仅主分支"增益 &lt; +0.005 → 判定无净收益。实测最优 <b>+0.07</b> 点
+（噪声量级），其余 16 个配置全部显著为负（−11 至 −37 点）。<br>
+三条独立证据：① 漏检连通域占 GT 连通域 9.7%，但其像素仅占 GT 前景 <b>0.90%</b>（面积中位 0.20%）——
+量级太小，补进来一块假前景的代价远大于补对一块小目标；② 以任何网格格心为框中心、保持宽高比达到
+IoU≥0.5 的<b>可解率为 0/486</b>（三档网格均是）——包围盒形状本身达不到 IoU 0.5；③ 点提示掩码尺度
+系统性偏大，新增前景达 GT 的 <b>5～20 倍</b>。<br>
+唯一能把结果拉回基线的做法是把 G6 显著度阈值提到 0.70，但那等于"只补主分支已经认出来的区域"，
+新增仅 11～14 块、增益回到噪声量级——T2 不再提供任何新信息。<br>
+详细记录：<code>paper/实验_T2_补漏负结果.md</code>｜实现：<code>build_gridbank.py</code> /
+<code>predict_t2.py</code> / <code>t2_sweep.py</code> / <code>t2_reachability.py</code>
+</div>
+<div class="cards"><div class="card done">
+          <div class="chd"><span class="badge">已完成</span>
+          <b>A</b><span class="pct">100.0%</span></div>
+          <div class="ct">构建类无关候选掩码库（dev i64 + i32；测试集按判据未建）</div>
+          <div class="bar"><i style="width:100.0%"></i></div>
+          <div class="cs">50/50 图 ·
+            已用 7.3 分 · 预计剩余 完成</div>
+          <div class="cs note">50 图 / 48050 候选 / 437s</div></div><div class="card done">
+          <div class="chd"><span class="badge">已完成</span>
+          <b>REACH</b><span class="pct">100.0%</span></div>
+          <div class="ct">几何可达性硬判据：漏检目标有多大、框形式能否可达</div>
+          <div class="bar"><i style="width:100.0%"></i></div>
+          <div class="cs">2999/2999 图 ·
+            已用 7 秒 · 预计剩余 完成</div>
+          <div class="cs note">漏检连通域 486（9.7%）· i64 可救 0% / i32 可救 0% / i16 可救 0%</div></div><div class="card done">
+          <div class="chd"><span class="badge">已完成</span>
+          <b>B2</b><span class="pct">100.0%</span></div>
+          <div class="ct">dev 超参扫描：六道闸门 × 融合强度 × 网格密度</div>
+          <div class="bar"><i style="width:100.0%"></i></div>
+          <div class="cs">20/20 配置 ·
+            已用 10.3 分 · 预计剩余 完成</div>
+          <div class="cs note">最优 t2-dev-sal70-m1 ΔSα=+0.0007；候选无效（增益 &lt; +0.005）</div></div><div class="card pending"><div class="chd"><span class="badge">待运行</span>
+              <b>D</b></div><div class="ct">产出结论：负结果记录 + 溯源更新</div>
+              <div class="cs">文档</div></div></div>
+<section><h2>候选筛选漏斗（当前累计）</h2><table class="tbl"><thead><tr><th>筛选环节</th><th>数量</th></tr></thead><tbody><tr class="in"><td>候选总数</td><td class="num">3200</td></tr><tr class="drop"><td>G1 置信度不足</td><td class="num">348</td></tr><tr class="drop"><td>G2 面积越界</td><td class="num">2430</td></tr><tr class="drop"><td>G2c 连通域过大</td><td class="num">0</td></tr><tr class="drop"><td>G3 贴边膨胀</td><td class="num">0</td></tr><tr class="drop"><td>G4 与主掩码重复</td><td class="num">21</td></tr><tr class="drop"><td>G5 置信核心不足</td><td class="num">0</td></tr><tr class="drop"><td>候选间 NMS</td><td class="num">2</td></tr><tr class="keep"><td>最终新增连通域</td><td class="num">11</td></tr></tbody></table></section>
+<section><h2>漏检诊断：网格候选能不能补上漏检？</h2>
+        <div class="sub" style="margin-bottom:8px">
+        「碰到」= MLLM 框包围盒与 GT 连通域相交（与 prompt_anatomy.py 同口径）。
+        落点率 = 网格点直接落在漏检目标上的比例 —— 若很低说明粗网格采不到小目标。</div>
+        <table class="tbl"><thead><tr><th>项</th><th>值</th></tr></thead><tbody>
+        <tr><td>被框碰到的 GT 连通域</td><td class="num">19</td></tr>
+        <tr><td>完全没被碰到的（漏检）</td><td class="num">1</td></tr>
+        <tr><td>漏检连通域面积分布</td><td>n=1 中位 0.001% 均值 0.001% 90分位 0.00% 最大 0.00%</td></tr>
+        <tr><td>已命中连通域面积分布</td><td>n=19 中位 1.346% 均值 5.668% 90分位 13.16% 最大 28.37%</td></tr>
+        <tr><td>漏检像素占全部 GT 像素</td>
+            <td class="num">0.00%</td></tr>
+        <tr><td>主分支为空且有漏检的图</td>
+            <td class="num">0</td></tr>
+        </tbody></table>
+        <table class="tbl" style="margin-top:10px"><thead><tr><th>候选库</th>
+        <th class="num">覆盖漏检数</th><th class="num">覆盖率</th>
+        <th class="num">网格点落在目标上</th><th class="num">落点率</th></tr></thead>
+        <tbody><tr><td>i64</td><td class="num">1/1</td><td class="num">100.0%</td><td class="num">0/1</td><td class="num">0.0%</td></tr><tr><td>fine</td><td class="num">1/1</td><td class="num">100.0%</td><td class="num">0/1</td><td class="num">0.0%</td></tr></tbody></table></section>
+<section><h2>dev 50 超参扫描（仅用于选配置，不是成绩）</h2>
+<table class="tbl"><thead><tr><th>配置</th><th class="num">Sα</th><th class="num">ΔSα</th>
+<th class="num">Fβmean</th><th class="num">MAE</th><th class="num">新增候选</th>
+<th class="num">耗时</th></tr></thead><tbody><tr class=""><td>t2-dev-primary</td><td class="num">0.9162</td><td class="num ">+0.0000</td><td class="num">0.8540</td><td class="num">0.0128</td><td class="num">0</td><td class="num">16s</td></tr><tr class=""><td>t2-dev-m50</td><td class="num">0.5590</td><td class="num neg">-0.3572</td><td class="num">0.3594</td><td class="num">0.2617</td><td class="num">1197</td><td class="num">31s</td></tr><tr class=""><td>t2-dev-m65</td><td class="num">0.5983</td><td class="num neg">-0.3179</td><td class="num">0.3942</td><td class="num">0.2253</td><td class="num">832</td><td class="num">26s</td></tr><tr class=""><td>t2-dev-m75</td><td class="num">0.6168</td><td class="num neg">-0.2993</td><td class="num">0.4096</td><td class="num">0.2025</td><td class="num">637</td><td class="num">24s</td></tr><tr class=""><td>t2-dev-m85</td><td class="num">0.6698</td><td class="num neg">-0.2464</td><td class="num">0.4576</td><td class="num">0.1640</td><td class="num">403</td><td class="num">22s</td></tr><tr class=""><td>t2-dev-m75-w05</td><td class="num">0.7254</td><td class="num neg">-0.1907</td><td class="num">0.6384</td><td class="num">0.1076</td><td class="num">637</td><td class="num">24s</td></tr><tr class=""><td>t2-dev-m75-w08</td><td class="num">0.6578</td><td class="num neg">-0.2584</td><td class="num">0.5003</td><td class="num">0.1648</td><td class="num">637</td><td class="num">24s</td></tr><tr class=""><td>t2-dev-m75-a05</td><td class="num">0.7510</td><td class="num neg">-0.1652</td><td class="num">0.5701</td><td class="num">0.0649</td><td class="num">220</td><td class="num">18s</td></tr><tr class=""><td>t2-dev-m75-a10</td><td class="num">0.7014</td><td class="num neg">-0.2147</td><td class="num">0.4957</td><td class="num">0.0993</td><td class="num">286</td><td class="num">18s</td></tr><tr class=""><td>t2-dev-m75-rd</td><td class="num">0.6218</td><td class="num neg">-0.2944</td><td class="num">0.4112</td><td class="num">0.2059</td><td class="num">637</td><td class="num">29s</td></tr><tr class=""><td>t2-dev-m65-rd</td><td class="num">0.6036</td><td class="num neg">-0.3125</td><td class="num">0.3957</td><td class="num">0.2286</td><td class="num">832</td><td class="num">32s</td></tr><tr class=""><td>t2-dev-m65-rd-fz</td><td class="num">0.6036</td><td class="num neg">-0.3125</td><td class="num">0.3957</td><td class="num">0.2286</td><td class="num">832</td><td class="num">32s</td></tr><tr class=""><td>t2-dev-m65-w08-a10</td><td class="num">0.7145</td><td class="num neg">-0.2016</td><td class="num">0.5551</td><td class="num">0.0939</td><td class="num">385</td><td class="num">19s</td></tr><tr class=""><td>t2-dev-m65-max1</td><td class="num">0.8046</td><td class="num neg">-0.1115</td><td class="num">0.5964</td><td class="num">0.0696</td><td class="num">46</td><td class="num">26s</td></tr><tr class=""><td>t2-dev-m65-max3</td><td class="num">0.7204</td><td class="num neg">-0.1958</td><td class="num">0.4930</td><td class="num">0.1104</td><td class="num">126</td><td class="num">28s</td></tr><tr class=""><td>t2-dev-fine32</td><td class="num">0.5803</td><td class="num neg">-0.3358</td><td class="num">0.3721</td><td class="num">0.2292</td><td class="num">1566</td><td class="num">75s</td></tr><tr class=""><td>t2-dev-fine32-m65</td><td class="num">0.5417</td><td class="num neg">-0.3744</td><td class="num">0.3374</td><td class="num">0.2658</td><td class="num">2241</td><td class="num">96s</td></tr><tr class=""><td>t2-dev-sal50</td><td class="num">0.9147</td><td class="num neg">-0.0014</td><td class="num">0.8492</td><td class="num">0.0130</td><td class="num">19</td><td class="num">20s</td></tr><tr class=""><td>t2-dev-sal70</td><td class="num">0.9168</td><td class="num pos">+0.0006</td><td class="num">0.8531</td><td class="num">0.0129</td><td class="num">14</td><td class="num">20s</td></tr><tr class="best"><td>t2-dev-sal70-m1</td><td class="num">0.9169</td><td class="num pos">+0.0007</td><td class="num">0.8533</td><td class="num">0.0129</td><td class="num">11</td><td class="num">20s</td></tr></tbody></table></section>
+<section><h2>参照基线（现有最好方法 prism-ma25-ft，测试集）</h2>
+<table class="tbl"><thead><tr><th>数据集</th><th>Sα / Fβmax / Fβmean / Eξmax / Eξmean / MAE</th></tr></thead>
+<tbody>
+<tr><td>ORSSD</td><td class="num">0.9120 / 0.8898 / 0.8530 / 0.9594 / 0.9293 / 0.0165</td></tr>
+<tr><td>EORSSD</td><td class="num">0.8899 / 0.8331 / 0.7958 / 0.9465 / 0.9177 / 0.0122</td></tr>
+<tr><td>ORSI-4199</td><td class="num">0.8415 / 0.8608 / 0.8177 / 0.9359 / 0.8933 / 0.0397</td></tr>
+<tr><td><b>三集平均</b></td><td class="num"><b>Sα 0.8811 · MAE 0.0228</b></td></tr>
+</tbody></table></section>
+<section><h2>实时日志</h2><div class="logs"><div class="lg"><span class="ts">12:23:47</span><span class="sid">A</span>阶段启动：构建类无关候选掩码库</div><div class="lg"><span class="ts">12:31:04</span><span class="sid">A</span>阶段完成：50 图 / 48050 候选 / 437s</div><div class="lg"><span class="ts">13:09:38</span><span class="sid">DIAG</span>阶段启动：漏检诊断（GT 连通域 vs 网格候选）</div><div class="lg"><span class="ts">13:11:22</span><span class="sid">DIAG</span>阶段完成：漏检连通域 1，覆盖率 i64 100.0% / fine 100.0%</div><div class="lg"><span class="ts">13:13:18</span><span class="sid">REACH</span>阶段启动：测试集漏检可达性（几何判据，无需 GPU）</div><div class="lg"><span class="ts">13:13:25</span><span class="sid">REACH</span>阶段完成：漏检连通域 486（9.7%）· i64 可救 0% / i32 可救 0% / i16 可救 0%</div><div class="lg"><span class="ts">13:47:45</span><span class="sid">B2</span>阶段启动：dev 50 筛选闸门超参扫描</div><div class="lg"><span class="ts">13:57:48</span><span class="sid">B</span>阶段启动：T2 补漏推理</div><div class="lg"><span class="ts">13:58:01</span><span class="sid">B</span>阶段完成：50 图 · 新增候选 11 · 13s</div><div class="lg"><span class="ts">13:58:03</span><span class="sid">B2</span>阶段完成：最优 t2-dev-sal70-m1 ΔSα=+0.0007；候选无效（增益 &lt; +0.005）</div><div class="lg"><span class="ts">15:31:34</span><span class="sid">T3DIAG</span>阶段启动：MLLM 多边形可用性诊断（零 GPU/API）</div><div class="lg"><span class="ts">15:31:35</span><span class="sid">T3DIAG</span>阶段完成：378 个实例：裁剪后更好 13 / 更差 346</div><div class="lg"><span class="ts">15:36:04</span><span class="sid">PSTATS</span>阶段启动：提取真实 MLLM 框经验分布</div><div class="lg"><span class="ts">15:36:10</span><span class="sid">PSTATS</span>阶段完成：6266 框：命中 2958（47.2%）</div><div class="lg"><span class="ts">15:37:18</span><span class="sid">T3S</span>阶段启动：校准器训练配方扫描（dev）</div><div class="lg"><span class="ts">15:37:59</span><span class="sid">T3S</span>阶段完成：最优 t3-tv07 -0.0407；无有效改进</div><div class="lg"><span class="ts">17:00:43</span><span class="sid">T3</span>阶段启动：T2 补漏推理</div><div class="lg"><span class="ts">17:01:00</span><span class="sid">T3</span>阶段完成：50 图 · 新增候选 0 · 17s</div><div class="lg"><span class="ts">17:57:40</span><span class="sid">T3LC</span>阶段启动：T2 补漏推理</div><div class="lg"><span class="ts">17:57:57</span><span class="sid">T3LC</span>阶段完成：50 图 · 新增候选 0 · 16s</div></div></section>
+<div class="foot">
+判据（事先约定，不事后修改）：dev Sα 相对"仅主分支"增益 &lt; +0.005 → 判定类无关候选带不来净收益，
+停止 T2 并把负结果写入论文边界讨论。<br>
+风险提示：类无关候选提升召回但**直接伤害精确率**；参考已有证据——τ 拒绝算子在最佳组合上叠加
+会使增益从 +2.76 回落到 +1.86，说明 Sα 对误检极其敏感。因此本实验成败几乎全在筛选闸门（G1～G4）。<br>
+dev 50 ⊂ ORSSD 训练集（与校准器训练集重叠），dev 数值偏乐观，只用于选配置；所有成绩数字均取测试集。
+</div>
+<script>
+if (false) { setTimeout(() => location.reload(), 2000); }
+</script>
+</body></html>
